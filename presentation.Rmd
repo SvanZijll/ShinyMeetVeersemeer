@@ -1,0 +1,57 @@
+---
+title: "Veersemeer"
+author: "Willem Stolte"
+date: "Friday, May 22, 2015"
+output: ioslides_presentation
+runtime: shiny
+---
+```{r load_packages, include=FALSE}
+library(ggplot2)
+library(plyr)
+library(pander)
+```
+
+## Shiny Presentation
+
+This R Markdown presentation is made interactive using Shiny. The viewers of the presentation can change the assumptions underlying what's presented and see the results immediately. 
+
+To learn more, see [Interactive Documents](http://rmarkdown.rstudio.com/authoring_shiny.html).
+
+## Waar is allemaal gemonsterd?
+
+```{r, echo=F}
+load(file = "R/DATA/MWTL_Veersemeer_bewerkt.Rdata")
+print(ddply(rws_dat, .(locatie), summarize, startjaar = format(min(datetime), format = "%Y"), eindjaar = format(max(datetime), format = "%Y")), row.names = F)
+```
+
+## Slide with Interactive Plot
+
+```{r, echo=FALSE}
+inputPanel(selectInput("location", "Location:", selected = "Soelekerkepolder oost", 
+                       choices = levels(rws_dat$locatie)),
+           selectInput("substance", "Substance:", selected = "saliniteit", 
+                       choices = levels(as.factor(rws_dat$variable))),
+           sliderInput("lspan", "Loess span", value = 0.3,
+                       min = 0, max = 1, 0.7, step = 0.05, sep = "")
+           )
+renderPlot({width = 0.5
+            subdf = subset(rws_dat, rws_dat$variable == input$substance &
+                             rws_dat$locatie == input$location)
+            require(ggplot2)
+            pl <- ggplot(subdf, aes(datetime, waarde))
+            pl + 
+              geom_point(aes(), color = "seagreen4", alpha = 0.5) + 
+              geom_smooth(aes(), method='loess', span = input$lspan, size = 1) +
+              theme_classic(base_size = 18)
+            })
+```
+
+## Wat is er eigenlijk gebeurd?
+
+1) Overgang van zoet naar zout water.... blabla
+2) Nutrienten in overgangsperiode blabla
+3) Zuurstof ..... 
+
+## Conclusies
+
+
