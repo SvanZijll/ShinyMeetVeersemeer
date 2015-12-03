@@ -1,0 +1,120 @@
+---
+title: "Tufte Handout2"
+author: "Willem Stolte"
+date: "10 november 2015"
+output: rmarkdown::tufte_handout
+---
+
+```{r load_packages, include=FALSE}
+library(ggplot2)
+library(plyr)
+library(pander)
+```
+
+```{r, echo = F}
+load(file = "R/DATA/MWTL_Veersemeer_bewerkt.Rdata")
+mystyle <- list(theme_bw(), 
+                theme(plot.title = element_text(size = rel(1.2), color = "purple")))
+```
+
+
+#Introduction
+\newthought{Lake Veere is an artificial}[^VMsite] lake in the province of Zeeland located between the islands of Noord-Beveland, Zuid-Beveland, and Walcheren. The lake was created during the Delta works when several inlets to the sea where closed off. The lake is closed off by the Veerse gatdam on the west and by the Zandkreekdam on the east. Since 2004 water from the Oosterschelde is let into the lake which creates in inflow of saltwater, making the lake brackish in nature, and causing a tidal difference of around 10 cm. The lake contains seventeen small uninhabited islands of which five are dedicated to birds. Lake Veere is governed by both the Water Framework Directive[^WFDlink] as well as the Bird Directive. An Environmental Impact Assessments also needs to be done when planning policy measures or projects that could have an effect on the lake. 
+```{r, fig.width = 10, fig.height = 2, fig.fullwidth = TRUE, fig.cap = "Time series of salinity in Lake Veere", echo = F}
+subdf = subset(rws_dat, rws_dat$variable == "saliniteit" &
+                 rws_dat$locatie == "Soelekerkepolder oost")
+subdfvoor = subset(subdf, subdf$year <= 2003)
+subdfna = subset(subdf, subdf$year > 2003)
+
+pl <- ggplot(subdf, aes(datetime, waarde))
+pl <- pl + geom_point(aes(), color = "seagreen4", alpha = 0.5)
+pl <- pl + geom_smooth(aes(), method='loess', span = 0.3, size = 1)
+pl <- pl + ggtitle("Saliniteit") + mystyle
+print(pl)
+```
+
+The Veerse Meer was isolated from the North sea and the Oosterschelde in 1961 and now depends on an artificial winter and summer level of the water. The salt/fresh gradients in the lake are starker than they used to be before the closing. Combined with the low flow rate of the water the water quality in the lake is poor. This was partially remedied through the inflow of water from the Oosterschelde. Several tubes have been constructed that allow flow between the Veerse Meer and the Oosterschelde, these constructions have been finished in 2004.
+
+#Nutrients
+## Phosphate
+
+```{r, fig.margin = TRUE, fig.cap = "Time series of dissolved phosphate in Lake Veere", echo = F}
+subdf = subset(rws_dat, rws_dat$variable == "opgelost fosfaat" &
+                 rws_dat$locatie == "Soelekerkepolder oost")
+subdfvoor = subset(subdf, subdf$year <= 2003)
+subdfna = subset(subdf, subdf$year > 2003)
+pl <- ggplot(subdf, aes(datetime, waarde))
+pl <- pl + geom_point(aes(), color = "seagreen4", alpha = 0.5)
+pl <- pl + geom_smooth(aes(), method='loess', span = 0.3, size = 1)
+pl <- pl + ggtitle("Fosfaat") + mystyle
+print(pl)
+```
+
+\newthought{The phosphate concentration} has decreased sharply after the transition of the lake to a more brackish water body. This partly due to the lower residence times of water in the lake, and partly becasue of the decrease of phosphate redelivery from the sediment. This caused the concentration of phosphate to decrease from `r round(mean(subdfvoor$waarde, na.rm = T),2)` microgram/l before, to `r round(mean(subdfna$waarde, na.rm = T),2)` microgram/l after the opening of the dam. The average summer concentrations after the opening of the dam was `r round(mean(subset(subdfna$waarde, subdfna$season == "summer"), na.rm = T),2)` microgram/l, while winter concentrations were `r round(mean(subset(subdfna$waarde, subdfna$season == "winter"), na.rm = T),2)`
+
+##Total nitrogen
+
+```{r, fig.margin = TRUE, fig.cap = "Total nitrogen in Lake Veere", echo = F}
+subdf = subset(rws_dat, rws_dat$variable == "totaal stikstof" &
+                 rws_dat$locatie == "Soelekerkepolder oost")
+subdfvoor = subset(subdf, subdf$year <= 2003)
+subdfna = subset(subdf, subdf$year > 2003)
+pl <- ggplot(subdf, aes(datetime, waarde))
+pl <- pl + geom_point(aes(), color = "seagreen4", alpha = 0.5)
+pl <- pl + geom_smooth(aes(), method='loess', span = 0.3, size = 1)
+pl <- pl + ggtitle("Totaal stikstof") + 
+  mystyle
+print(pl)
+```
+
+\newthought{Total nitrogen concentration} in Lake Veere was also decreased after 2003. Voor de opening van de Veerse Gatdam was dit gemiddeld `r round(mean(subdfvoor$waarde, na.rm = T),2)` microgram/l, erna `r round(mean(subdfna$waarde, na.rm = T),2)` microgram/l 
+
+
+#Ecology
+
+Lake Veere has an important ecological function. Not only does it harbour several species that cannot be found elsewhere but is also recognised as an international wetland and protected under the European Bird and Habitat Directive. The status of lake Veere in light of the requirements set by the Water Framework Directive also play an important role in governing the lake.  The current status of lake Veere is
+
+# Example of different possible formats for Tufte Handout (not about Veerse Meer)
+
+## Equations
+
+You can also include \LaTeX\ equations in the margin by explicitly invoking the `marginfigure` environment.
+
+\begin{marginfigure}
+$$\frac{d}{dx}\left( \int_{0}^{x} f(u)\,du\right)=f(x).$$
+\caption{An equation}
+\end{marginfigure}
+
+
+# Sidenotes
+
+One of the most prominent and distinctive features of this style is the extensive use of sidenotes. There is a wide margin to provide ample room for sidenotes and small figures. Any use of a footnote will automatically be converted to a sidenote. ^[This is a sidenote that was entered using a footnote.] 
+
+If you'd like to place ancillary information in the margin without the sidenote mark (the superscript number), you can use the `\marginnote` command. \marginnote{This is a margin note.  Notice that there isn't a number preceding the note.}
+
+Note also that the two footnote references (`tufte_latex` and `books_be`, both defined below) were also included in the margin on the first page of this document.
+
+# Tables
+
+You can use the **xtable** package to format \LaTeX\ tables that integrate well with the rest of the Tufte handout style. Note that it's important to set the `xtable.comment` and `xtable.booktabs` options as shown below to ensure the table is formatted correctly for inclusion in the document.
+
+```{r, results='asis'}
+library(xtable)
+options(xtable.comment = FALSE)
+options(xtable.booktabs = TRUE)
+xtable(head(mtcars[,1:6]), caption = "First rows of mtcars")
+```
+
+
+[^VMsite]: https://nl.wikipedia.org/wiki/Veerse_Meer
+[^WFDlink]: https://publicwiki.deltares.nl/display/~zijll/Water+Framework+Directive
+
+
+
+
+
+
+
+
+
+

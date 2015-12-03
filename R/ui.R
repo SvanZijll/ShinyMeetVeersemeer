@@ -50,10 +50,10 @@ shinyUI(
         ),
         fluidRow(
           column(width = 4,
-                 print("Trend: Tijdserie met jaarlijkse periodiciteit\n"),
-                 print("y = a + b*x + c*cos(2*pi*x)+d*sin(2*pi*x), waarbij the trend door -b- wordt gerepresenteerd\n"),
-                 print("   - 90-percentile: 90 percentile of observations per summer/winter per jaar en voor de geselecteerde periode"),
-                 print("   - Loess: curve met in te stellen stijfheid voor patroonherkenning")
+                 ("Trend: Tijdserie met jaarlijkse periodiciteit\n
+                       y = a + b*x + c*cos(2*pi*x)+d*sin(2*pi*x), waarbij the trend door -b- wordt gerepresenteerd\n
+                       - 90-percentile: 90 percentile of observations per summer/winter per jaar en voor de geselecteerde periode\n
+                       - Loess: curve met in te stellen stijfheid voor patroonherkenning")
           ),
           column(width = 4, offset = 2,
                  print("Boxplot of violinplot van de jaarlijkse periodiciteit voor de geselecteerde periode")

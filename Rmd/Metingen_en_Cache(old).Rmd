@@ -1,0 +1,61 @@
+---
+title: "Metingen en Cache"
+author: "Sascha van Zijll Langhout"
+date: "November 25, 2015"
+output: html_document
+---
+```{r load_packages, include=FALSE}
+library(readr)
+library(ggplot2)
+library(plyr)
+library(reshape2)
+```
+
+
+```{r}
+wdir <- ("n:/Projects/1220000/1220248/B. Measurements and calculations/Meetpalen VM3 VM4 VM5")
+```
+
+```{r}
+VM5<-read.csv2(file.path(wdir,"Meetpaal_VM5_2000-2015.csv"), na = 999.999, dec = ".")
+VM5 <- VM5[c("Datum", "Peil", "Waterstand", "Temperatuur_boven", "Temperatuur_beneden", "Saliniteit_boven", "Saliniteit_beneden")]
+VM5$Datumtijd <- as.POSIXlt(VM5$Datum, format = "%d-%m-%Y %H:%M", tz = "UTC")
+VM5$Datumtijd <- as.POSIXct(VM5$Datumtijd)
+VM5$Meetpaal <- "VM5"
+
+VM4 <- read.csv2(file.path(wdir,"Meetpaal_VM4_2000-2015.csv"), na = 999.999, dec = ".")
+VM4 <- VM4[c("Datum", "Peil", "Waterstand..m.NAP.", "Temperatuur_boven", "Temperatuur_beneden", "Saliniteit_boven", "Saliniteit_beneden")]
+colnames(VM4) <- c("Datum", "Peil", "Waterstand", "Temperatuur_boven", "Temperatuur_beneden", "Saliniteit_boven", "Saliniteit_beneden")
+VM4$Datumtijd <- as.POSIXlt(VM4$Datum, format = "%d-%m-%Y %H:%M", tz = "UTC")
+VM4$Datumtijd <- as.POSIXct(VM4$Datumtijd)
+VM4$Meetpaal <- "VM4"
+
+VM <- rbind(VM4, VM5)
+```
+
+
+```{r}
+VM$Datum <- as.Date(VM$Datumtijd)
+VMdag <- ddply(VM, .(Datum, Meetpaal), summarize,
+           GemWaterstand = mean(Waterstand),
+           GemTemperatuur_boven = mean(Temperatuur_boven),
+           GemTemperatuur_beneden = mean(Temperatuur_beneden), 
+           GemSaliniteit_boven = mean(Saliniteit_boven),
+           GemSaliniteit_beneden = mean(Saliniteit_beneden))
+VMdag_tidy<-melt(VMdag, id.vars = c("Datum", "Meetpaal"))
+VMdag_tidy$Meting<-paste(VMdag_tidy$Meetpaal, VMdag_tidy$variable)
+```
+
+```{r}
+plot <- ggplot(subset(VMdag_tidy, VMdag_tidy$variable %in% c("GemSaliniteit_boven", "GemSaliniteit_beneden")), aes(Datum, value))
+plot + geom_line(aes(color = Meting))
+```
+
+```{r}
+plot <- ggplot(subset(VMdag_tidy, VMdag_tidy$variable %in% c("GemTemperatuur_boven", "GemTemperatuur_beneden")), aes(Datum, value))
+plot + geom_line(aes(color = Meting))
+```
+
+
+
+

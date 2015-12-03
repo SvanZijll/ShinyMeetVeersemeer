@@ -1,0 +1,47 @@
+---
+title: "Bekkenrapportage Veerse Meer"
+author: "Sascha van Zijll Langhout"
+date: "November 25, 2015"
+output: html_document
+---
+
+```{r load_packages, include=FALSE}
+library(ggplot2)
+library(plyr)
+library(pander)
+library(readr)
+library(reshape2)
+```
+
+```{r require_packages}
+require(readr)
+require(ggplot2)
+require(plyr)
+require(reshape2)
+```
+
+```{r}
+setwd("n:/Projects/1220000/1220248/B. Measurements and calculations/Meetpalen VM3 VM4 VM5")
+VM5_all <- list.files(pattern = "VM5")
+VM4_all <- list.files(pattern = "VM4")
+getwd()
+```
+```{r}
+VM5<-read.csv2("Meetpaal_VM5_2000-2015.csv", na = 999.999, dec = ".")
+VM5 <- VM5[c("Datum", "Peil", "Waterstand", "Temperatuur_boven", "Temperatuur_beneden", "Saliniteit_boven", "Saliniteit_beneden")]
+VM5$Datumtijd <- as.POSIXlt(VM5$Datum, format = "%d-%m-%Y %H:%M", tz = "UTC")
+VM5$Datumtijd <- as.POSIXct(VM5$Datumtijd)
+VM5$Meetpaal <- "VM5"
+
+VM4 <- read.csv2("Meetpaal_VM4_2000-2015.csv", na = 999.999, dec = ".")
+VM4 <- VM4[c("Datum", "Peil", "Waterstand..m.NAP.", "Temperatuur_boven", "Temperatuur_beneden", "Saliniteit_boven", "Saliniteit_beneden")]
+colnames(VM4) <- c("Datum", "Peil", "Waterstand", "Temperatuur_boven", "Temperatuur_beneden", "Saliniteit_boven", "Saliniteit_beneden")
+VM4$Datumtijd <- as.POSIXlt(VM4$Datum, format = "%d-%m-%Y %H:%M", tz = "UTC")
+VM4$Datumtijd <- as.POSIXct(VM4$Datumtijd)
+VM4$Meetpaal <- "VM4"
+
+VM <- rbind(VM4, VM5)
+```
+
+#Inleiding
+
