@@ -19,6 +19,8 @@ library(scales)
 
 ```{r, echo = FALSE}
 wdir <- ("n:/Projects/1220000/1220248/B. Measurements and calculations/Meetpalen VM3 VM4 VM5")
+## periode voor rapportage
+beginjaar = 2000; eindjaar = 2010
 ```
 
 ```{r, echo = FALSE, cache=T}
@@ -97,22 +99,18 @@ plot.meetpaal.data(newsubset, ylabel = "Daggemiddelde temperatuur (C)", xlabel =
 load(file = "../R/DATA/MWTL_Veersemeer_bewerkt.Rdata")
 alllocs <- as.character(unique(rws_dat$locatie))
 ## run following code to see the list of measured variables
-# unique(rws_dat$variable)
-# [1] "extinctie coefficient"                        "silicaat"                                    
-# [3] "saliniteit"                                   ""                                            
-# [5] "nitraat"                                      "nitriet"                                     
-# [7] "ammonium"                                     "totaal particulair stikstof"                 
-# [9] "totaal particulair fosfaat"                   "temperatuur"                                 
-#[11] "Chloride in mg/l in oppervlaktewater"         "gesuspendeerd materiaal"                     
-#[13] "totaal organisch koolstof"                    "opgelost fosfaat"                            
-#[15] "zuurgraad"                                    "totaal opgelost fosfaat"                     
-#[17] "totaal fosfaat"                               "zuurstof"                                    
-#[19] "totaal opgelost stikstof"                     "totaal stikstof"                             
-#[21] "kjelldahl stikstof"                           "chlorofyl-a"                                 
-#[23] "Percentage zuurstof in % in oppervlaktewater" "opgelost organisch koolstof"                 
-#[25] "particulair organisch koolstof"     
+ # unique(rws_dat$variable)
+#  [1] "ammonium"                       "chloriniteit"                   "chlorofyl-a"                   
+#  [4] "doorzicht in dm"                "extinctie coefficient"          "kjelldahl stikstof"            
+#  [7] "nitraat"                        "nitriet"                        "opgelost organisch koolstof"   
+# [10] "opgelost fosfaat"               "particulair organisch koolstof" "zuurstofverzadiging"           
+# [13] "saliniteit"                     "silicaat"                       "totaal stikstof"               
+# [16] "totaal opgelost stikstof"       "totaal particulair stikstof"    "temperatuur"                   
+# [19] "totaal fosfaat"                 "totaal opgelost fosfaat"        "totaal particulair fosfaat"    
+# [22] "totaal organisch koolstof"      "zuurgraad"                      "zuurstof"                      
+# [25] "gesuspendeerd materiaal"        "opgelost anorganisch N"        
 
-trend.plot <- function (subdf, variable, xx, yy, unit = "eenheid", trendline = F, loessline = F, lspan = 0.3, perc90line = F, pointline = F) {
+plotWaterbase <- function (subdf, variable, xx, yy, unit = "eenheid", trendline = F, loessline = F, lspan = 0.3, perc90line = F, pointline = F) {
   x = as.numeric(subdf[,xx]); y = subdf[,yy]    
   minscale   <- min(subdf[,xx])
   maxscale   <- max(subdf[,xx])
@@ -125,7 +123,7 @@ trend.plot <- function (subdf, variable, xx, yy, unit = "eenheid", trendline = F
     slope      <- regression$coefficients[2,1]  #slope of regression including season effect
     pvalue     <- format(regression$coefficients[2,4], digits = 2)
     intercept  <- regression$coefficients[[1]]
-    yposition  <- quantile(subdf[,yy], 0.99)
+    yposition  <- quantile(subdf[,yy], 0.99, na.rm = T)
     pl <- pl + geom_smooth(aes(), method='lm', formula = y ~ x+I(cos(2*pi*x/31622400))+I(sin(2*pi*x/31622400)), size = 0.7, alpha = 0.3, n = 1000)
     pl <- pl + geom_abline(intercept = intercept, slope = slope , color = "darkblue", size = 1)
     pl <- pl + annotate("text", label = paste("slope =", format(slope*31622400, digits = 2), unit, "per year | ", "p=", pvalue), x = maxscale - 0.5 * (maxscale - minscale), y = yposition, size = 4)
@@ -140,6 +138,7 @@ trend.plot <- function (subdf, variable, xx, yy, unit = "eenheid", trendline = F
       scale_colour_discrete(guide = FALSE)
   }
   if(pointline) pl <- pl + geom_line()
+  pl <- pl + geom_vline(xintercept = as.numeric(as.POSIXct("2004-06-01")), size = 1, linetype = 2, color = "black", alpha = 0.5)
   pl <- pl + theme(text = element_text(size = 10), legend.position = "bottom")
   pl <- pl + scale_x_datetime(minor_breaks = date_breaks("1 year"))
   pl <- pl + xlab("year") + ylab(paste(substance, unit))
@@ -148,60 +147,74 @@ trend.plot <- function (subdf, variable, xx, yy, unit = "eenheid", trendline = F
 
 ```
 
-##5.4. Zwevende stof en doorzicht
+##5.4. Zwevende stof en extinctiecoefficient
 
-```{r, echo = F, fig.height = 2, fig.width = 8}
-from = 2000; to = 2015
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
+
 subdf = subset(rws_dat, rws_dat$variable == "gesuspendeerd materiaal" &
                  rws_dat$locatie == "Soelekerkepolder oost" &
-                 rws_dat$year >= from & rws_dat$year <= to)
-trend.plot(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid")
+                 rws_dat$year >= beginjaar & rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, loessline = T)
 
 ```
 
-Zwevende stof in het Veerse Meer varieerde in de periode `r from` tot `r to` tussen `r round(min(subdf$waarde, na.rm = T), 1)` en `r round(max(subdf$waarde, na.rm = T), 1)` mg/l (Figuur 5.1).
+Zwevende stof in het Veerse Meer varieerde in de periode `r beginjaar` tot `r eindjaar` tussen `r round(min(subdf$waarde, na.rm = T), 1)` en `r round(max(subdf$waarde, na.rm = T), 1)` mg/l (Figuur 5.1).
+
+
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
+
+subdf = subset(rws_dat, rws_dat$variable == "doorzicht in dm" &
+                 rws_dat$locatie == "Soelekerkepolder oost" &
+                 rws_dat$year >= beginjaar & rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, loessline = T)
+
+```
+
+Doorzicht in dm in het Veerse Meer varieerde in de periode `r beginjaar` tot `r eindjaar` tussen `r round(min(subdf$waarde, na.rm = T), 1)` en `r round(max(subdf$waarde, na.rm = T), 1)` m^-1^ (Figuur 5.1).
 
 
 
 ##5.5. Nutrientenconcentraties
 
-```{r, echo = F, fig.height = 2, fig.width = 8}
-subdf = subset(rws_dat, rws_dat$variable == "nitraat" &
-                 rws_dat$locatie == "Soelekerkepolder oost" &
-                 rws_dat$year >= from &
-                 rws_dat$year <= to)
-trend.plot(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", trendline = T)
-
-```
-
-In de periode `r from` - `r to` nam de nitraat concentratie af/toe met xxx mg N/jaar (zie figuur). 
-
-```{r, echo = F, fig.height = 2, fig.width = 8}
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
 subdf = subset(rws_dat, rws_dat$variable == "opgelost fosfaat" &
                  rws_dat$locatie == "Soelekerkepolder oost" &
-                 rws_dat$year >= 2005 &
-                 rws_dat$year <= 2015)
-trend.plot(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", loessline = T, lspan = 0.3)
+                 rws_dat$year >= beginjaar &
+                 rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
 
 ```
 
 
-```{r, echo = F, fig.height = 2, fig.width = 8}
+
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
+subdf = subset(rws_dat, rws_dat$variable == "opgelost anorganisch N" &
+                 rws_dat$locatie == "Soelekerkepolder oost" &
+                 rws_dat$year >= beginjaar &
+                 rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
+```
+
+In de periode `r beginjaar` - `r eindjaar` nam de nitraat concentratie af/toe met xxxx mg N/jaar (zie figuur). 
+
+
+
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
 subdf = subset(rws_dat, rws_dat$variable == "silicaat" &
                  rws_dat$locatie == "Soelekerkepolder oost" &
-                 rws_dat$year >= 2010 &
-                 rws_dat$year <= 2015)
-trend.plot(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", perc90line = T)
+                 rws_dat$year >= beginjaar &
+                 rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
 
 ```
 
 
-```{r, echo = F, fig.height = 2, fig.width = 8}
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
 subdf = subset(rws_dat, rws_dat$variable == "ammonium" &
                  rws_dat$locatie == "Soelekerkepolder oost" &
-                 rws_dat$year >= 2000 &
-                 rws_dat$year <= 2015)
-trend.plot(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T)
+                 rws_dat$year >= beginjaar &
+                 rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
 
 ```
 
