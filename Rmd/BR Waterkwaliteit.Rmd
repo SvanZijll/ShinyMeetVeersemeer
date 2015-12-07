@@ -159,6 +159,10 @@ trend.plot(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid")
 
 ```
 
+Zwevende stof in het Veerse Meer varieerde in de periode `r from` tot `r to` tussen `r round(min(subdf$waarde, na.rm = T), 1)` en `r round(max(subdf$waarde, na.rm = T), 1)` mg/l (Figuur 5.1).
+
+
+
 ##5.5. Nutrientenconcentraties
 
 ```{r, echo = F, fig.height = 2, fig.width = 8}
