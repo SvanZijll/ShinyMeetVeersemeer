@@ -2,7 +2,7 @@
 title: "Waterkwaliteit"
 author: "Sascha van Zijll Langhout"
 date: "December 1, 2015"
-output: html_document
+output: pdf_document
 ---
 
 ```{r load_packages, include=FALSE}
@@ -61,9 +61,17 @@ Het Veerse Meer is door de opening van de Katse Heule aanzienlijk zouter geworde
 Door de Katse Heule is, evenredig met het toegenomen zoutgehalte, het percentage zoet water sterk verminderd, van ongeveer 45% naar ongeveer 15%. De oorzaak is niet een verminderde polderbelasting, maar een grotere uitwisseling met de Oosterschelde waardoor het zoete water wordt verdund en afgevoerd.
 Figuur 5.1 toont de daggemiddelde saliniteit gemeten op locaties VM4 en VM5. De seizoensvariatie met hogere saliniteit in de zomer en lager saliniteit in de winter en de sprong in saliniteit na de ingebruikname van de Katse Heule in 2004 springen het meest in het oog.
 
-![Overzicht van data voor saliniteit in het Veerse Meer](Pictures/Waterkwaliteit/Tabel5.1.JPG)
+Tabel 5.1. Overzicht van data voor saliniteit in het Veerse Meer. bron: MWTL via Servicedesk data en meetpalen via [link](http://waterberichtgeving.rws.nl/nl/water-en-weer_dataleveringen_ophalen-opgetreden-data.htm)
 
-```{r, echo=FALSE, warning = F, fig.height = 4, fig.width = 8}
+Naam                 |	Coördinaten (RD) | Diepte (m NAP)	          | Periode	| Beschikbaarheid 
+---------------------|-------------------|--------------------------|---------|----------------
+VM4 Oranjeplaat	     | (37914, 393297)   |	-0,98 m onder wateropp. |	2000 – mei 2015	| 92%  
+NA                 | NA                |	-2,72 m NAP             | NA      |    91%
+VM5 Schotsman/Ruiterplaat	| (34132, 400630)	| -0,95 m onder wateropp.	| 2005 – mei 2015	|90%
+NA	| NA |	-4,08 m NAP	| NA |	84%
+Soelekerkepolder Oost	|	NA | 1 m onder wateropp.	| 2000 - 2014 |	NA
+
+```{r, echo=FALSE, warning = F, fig.height = 4, fig.width = 8, fig.cap="figuur 5.x"}
 plot.meetpaal.data <- function (file, xx = "Datum", yy = "value", pointcolor = "Meting", ylabel, xlabel) {
   plot <- ggplot(file ,aes_string(xx, yy))
   plot + 
@@ -148,6 +156,9 @@ plotWaterbase <- function (subdf, variable, xx, yy, unit = "eenheid", trendline 
 ```
 
 ##5.4. Zwevende stof en extinctiecoefficient
+Na de opening van de Katse Heule is de concentratie zwevende stof toegenomen (Figuur 5.4). Deze toename wordt veroorzaakt door toegenomen concentraties in de winterperiode december-januari (gemiddeld 6,6 mg/l), vooral in de jaren 2006-2012, die 2-3 maal hoger zijn dan de concentraties in de jaren voor ingebruikname van het doorlaatmiddel (gemiddeld 2.4 mg/l). In de recente jaren (2013-2014) is de hoeveelheid zwevende stof in die maanden weer afgenomen. Overigens zijn de zwevende stof concentraties nog steeds laag, in de periode april-november gemiddeld 6 mg/l.
+De tijdelijke toename van de zwevende stof concentratie na de opening van de Katse Heule verloopt min of meer synchroon met eenzelfde tijdelijke toename in de hele Oosterschelde ((De Vries 2014)), De hoeveelheid zwevende stof is erg variabel, zonder herkenbaar seizoenspatroon.
+Het doorzicht nam in de jaren voor de opening van de Katse Heule geleidelijk af en varieerde in 2003-2004 tussen 2 en 17 dm (Secchi diepte). In het groeiseizoen maart-september was het doorzicht in de jaren 2000-2004 gemiddeld 11 dm, en dit is na de opening van de Katse Heule meer dan verdubbeld tot gemiddeld 24 dm (Figuur 5.5).
 
 ```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
 
@@ -172,9 +183,17 @@ plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid
 
 Doorzicht in dm in het Veerse Meer varieerde in de periode `r beginjaar` tot `r eindjaar` tussen `r round(min(subdf$waarde, na.rm = T), 1)` en `r round(max(subdf$waarde, na.rm = T), 1)` m^-1^ (Figuur 5.1).
 
-
-
 ##5.5. Nutrientenconcentraties
+De orthofosfaatconcentraties in het Veerse Meer zijn sterk gedaald na de ingebruikname van de Katse Heule (Fig. 5.6). De concentraties vertonen een typisch seizoenspatroon met minimum concentraties in april en maximale concentraties in het najaar en het begin van de winter. De concentraties in najaar/winter zijn gedaald tot gemiddeld 0,17 mg P/l (was 0,42 mg P /l in 2000-2004). Het voorjaarsminimum is ook lager geworden na de opening van de Katse Heule en is nu gemiddeld 0,045 mg P/l, wat overigens nog steeds boven het niveau is waar fosfaatconcentraties limiterend worden voor de groei van fytoplankton (<0,014 mg P/l; (Fisher et al. 1988, Peeters & Peperzak 1990, Fisher et al. 1992)).
+Opvallend is ook dat de maximale fosfaatconcentraties bij de bodem, die gedurende de zomer altijd stijgen als gevolg van mineralisatie en desorptie in het sediment, zijn afgenomen tot ongeveer 1/5 van de concentraties in de periode voor de Katse Heule.
+
+Ook voor de concentraties van opgelost anorganisch stikstof (DIN: ammonium+nitriet+nitraat) geldt dat deze sterk zijn afgenomen na de ingebruikname van de Katse Heule (Fig. 5.7). De stikstofconcentraties vertonen een seizoenspatroon met maximale concentraties in de wintermaanden (januari-maart, v????r het begin van de fytoplanktonbloei) en dalen tot minimale concentraties in de zomerperiode. De gemiddelde winterconcentraties zijn na ingebruikname van de Katse Heule gedaald tot 1,4 mg N/l, wat aanzienlijk lager is dan de concentratie in 2000-2004 (2,2 mg N/l). De afname in de stikstofconcentratie is relatief minder groot dan die van fosfaat.
+Het typische seizoenspatroon met een minimum in de zomer en een maximum bij de start van het voorjaar wordt veroorzaakt door de biologische cyclus van opname door fytoplankton en mineralisatie, en door de hogere zoetwaterbelasting in de winter. De zomerconcentratie is langdurig laag (mei-september) met een daling tot ongeveer 0,04 mg N/l, wat in de buurt komt van limiterende concentraties (0,028 mg/l). Er is geen verschil in stikstofconcentraties in de zomer tussen de periode v????r en na de Katse Heule.
+Het aandeel van NH4+ in DIN is heel laag in het voorjaar (maart, 5%) en stijgt in de huidige situatie tot 70% in september-oktober. De benutting en recycling van stikstof, zowel de nieuwe als de regeneratieproductie, is in het Veerse Meer dus heel intensief.
+In de waterlaag bij de bodem bestaat het DIN in de zomer voor nagenoeg 100% uit ammonium, maar de sterke zomerse concentratiestijging is na de opening van de Katse Heule nagenoeg verdwenen.
+
+De seizoensdynamiek in de silicaatconcentraties laat eveneens maximale concentraties in de wintermaanden zien, met een snelle afname in het voorjaar als gevolg van opname door fytoplankton (Fig. 5.8). De laagste concentraties komen voor in de maanden april-juni. De winterconcentraties zijn gedaald van gemiddeld 6,1 mg Si/l in 2000-2004 tot 2,8 mg Si/l in de periode na de ingebruikname van de Katse Heule. De concentraties in de minimum periode in het voorjaar zijn eveneens sterk gedaald, van gemiddeld 3,8 mg/l naar 0,5 mg Si/l, wat nog steeds ruim boven de limiterende concentratie van 0,06 mg Si/l is.
+Wat opvalt bij de silicaatconcentraties is dat de voorjaarsminima in de laatste jaren voor de opening van de Katse Heule stegen van 3,6 naar 5.9 mg Si/l wat duidt op een verminderde groei van kiezelwieren tijdens de voorjaarsbloei.
 
 ```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
 subdf = subset(rws_dat, rws_dat$variable == "opgelost fosfaat" &
@@ -184,6 +203,7 @@ subdf = subset(rws_dat, rws_dat$variable == "opgelost fosfaat" &
 plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
 
 ```
+In de periode `r beginjaar` - `r eindjaar` nam de nitraat concentratie af/toe met xxx mg N/jaar (zie figuur). 
 
 
 
@@ -209,7 +229,7 @@ plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid
 ```
 
 
-```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8, eval = F}
 subdf = subset(rws_dat, rws_dat$variable == "ammonium" &
                  rws_dat$locatie == "Soelekerkepolder oost" &
                  rws_dat$year >= beginjaar &
@@ -220,5 +240,14 @@ plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid
 
 
 ##5.6. Verontreinigende stoffen
+
+###5.6.1 Monitoring
+Binnen de KRW worden drie soorten monitoring onderscheiden. De Toestand en Trend
+Monitoring (T&T), de Operationele monitoring (OM) en de zogenaamde Monitoring Nader
+Onderzoek (Investigative Monitoring). Alle prioritaire en specifiek verontreinigende stoffendienen ????n keer per planperiode van 6 jaar te worden gemeten voor de T&T monitoring(Faber et al. 2011). Voor de Operationele Monitoring dient jaarlijks gemeten te worden voordie stoffen, waarvoor een waterlichaam ???at risk??? is en de doelstelling voor 2015 niet gehaalddreigt te worden. De prioritaire stoffen worden 12 keer per jaar, minimaal 1 keer per maand bemonsterd, met uitzondering van bestrijdingsmiddelen, die alleen in het groeiseizoen mogen worden gemeten. De specifiek verontreinigende stoffen worden 4 keer per jaar bemonsterd, waarbij de bemonstering minimaal 1 keer per kwartaal plaatsvindt. In 2007 is het KRW monitoringsprogramma gestart. Er zijn dus slechts een beperkt aantal monitoringgegevens beschikbaar waarover de beoordeling van de huidige toestand kan worden gemaakt.
+
+###5.6.2 Toetsing
+In het Veerse Meer overschrijden geen van de prioritaire stoffen de normen.
+Van de specifiek verontreinigende stoffen zijn boor en koper als probleemstof aangemerkt (Bellert et al. 2014).
 
 

@@ -1,0 +1,224 @@
+---
+title: "Waterkwaliteit"
+author: "Sascha van Zijll Langhout"
+date: "December 1, 2015"
+output: html_document
+---
+
+```{r load_packages, include=FALSE}
+library(readr)
+library(ggplot2)
+library(plyr)
+library(reshape2)
+library(png)
+library(pander)
+library(scales)
+```
+
+
+
+```{r, echo = FALSE}
+wdir <- ("n:/Projects/1220000/1220248/B. Measurements and calculations/Meetpalen VM3 VM4 VM5")
+## periode voor rapportage
+beginjaar = 2000; eindjaar = 2010
+```
+
+```{r, echo = FALSE, cache=T}
+VM5<-read.csv2(file.path(wdir,"Meetpaal_VM5_2000-2015.csv"), na = 999.999, dec = ".")
+VM5 <- VM5[c("Datum", "Peil", "Waterstand", "Temperatuur_boven", "Temperatuur_beneden", "Saliniteit_boven", "Saliniteit_beneden")]
+VM5$Datumtijd <- as.POSIXlt(VM5$Datum, format = "%d-%m-%Y %H:%M", tz = "UTC")
+VM5$Datumtijd <- as.POSIXct(VM5$Datumtijd)
+VM5$Meetpaal <- "VM5"
+
+VM4 <- read.csv2(file.path(wdir,"Meetpaal_VM4_2000-2015.csv"), na = 999.999, dec = ".")
+VM4 <- VM4[c("Datum", "Peil", "Waterstand..m.NAP.", "Temperatuur_boven", "Temperatuur_beneden", "Saliniteit_boven", "Saliniteit_beneden")]
+colnames(VM4) <- c("Datum", "Peil", "Waterstand", "Temperatuur_boven", "Temperatuur_beneden", "Saliniteit_boven", "Saliniteit_beneden")
+VM4$Datumtijd <- as.POSIXlt(VM4$Datum, format = "%d-%m-%Y %H:%M", tz = "UTC")
+VM4$Datumtijd <- as.POSIXct(VM4$Datumtijd)
+VM4$Meetpaal <- "VM4"
+
+VM <- rbind(VM4, VM5)
+```
+
+
+```{r, echo=FALSE, cache = T}
+VM$Datum <- as.Date(VM$Datumtijd)
+VMdag <- ddply(VM, .(Datum, Meetpaal), summarize,
+               'Waterstand' = mean(Waterstand),
+               'Temperatuur boven' = mean(Temperatuur_boven),
+               'Temperatuur beneden' = mean(Temperatuur_beneden), 
+               'Saliniteit boven' = mean(Saliniteit_boven),
+               'Saliniteit beneden' = mean(Saliniteit_beneden))
+VMdag_tidy<-melt(VMdag, id.vars = c("Datum", "Meetpaal"))
+VMdag_tidy$Meting<-paste(VMdag_tidy$Meetpaal, VMdag_tidy$variable)
+```
+
+#5. Waterkwaliteit
+##5.1. Monitoring
+Waterkwaliteitsgegevens worden gemeten in het MWTL monitoringsprogramma van Rijkswaterstaat. De gegevens die hier gepresenteerd worden zijn afkomstig van metingen van het monsterpunt Soelekerkerpolder Oost, tenzij anders vermeld. Hier wordt 1-2 maal per maand gemeten. Omdat dit meetpunt het enige doorlopende meetpunt voor waterkwaliteit in het Veerse Meer is, worden deze data hier gepresenteerd. In het verleden werd ook op andere punten waterkwaliteit gemeten, maar die metingen zijn niet voortgezet na 2007.
+##5.2. Saliniteit (chloride)
+Het Veerse Meer is door de opening van de Katse Heule aanzienlijk zouter geworden. De huidige saliniteit (28-30 ppt) is maar weinig lager dan die in de Oosterschelde (Wissenkerke 32 ppt). De seizoensvariatie is hetzelfde gebleven. Het Veerse Meer is in de (na)zomer zouter dan in de winter. Het verschil is ongeveer 5 ppt. De verticale verschillen zijn door de Katse Heule sterk verminderd. De verticale gradiënt bedroeg vóór de opening van de Katse Heule meer dan 5 ppt, na de opening 2 ppt.
+Door de Katse Heule is, evenredig met het toegenomen zoutgehalte, het percentage zoet water sterk verminderd, van ongeveer 45% naar ongeveer 15%. De oorzaak is niet een verminderde polderbelasting, maar een grotere uitwisseling met de Oosterschelde waardoor het zoete water wordt verdund en afgevoerd.
+Figuur 5.1 toont de daggemiddelde saliniteit gemeten op locaties VM4 en VM5. De seizoensvariatie met hogere saliniteit in de zomer en lager saliniteit in de winter en de sprong in saliniteit na de ingebruikname van de Katse Heule in 2004 springen het meest in het oog.
+
+![Overzicht van data voor saliniteit in het Veerse Meer](Pictures/Waterkwaliteit/Tabel5.1.JPG)
+
+```{r, echo=FALSE, warning = F, fig.height = 4, fig.width = 8}
+plot.meetpaal.data <- function (file, xx = "Datum", yy = "value", pointcolor = "Meting", ylabel, xlabel) {
+  plot <- ggplot(file ,aes_string(xx, yy))
+  plot + 
+    geom_line(aes_string(color = pointcolor)) +
+    geom_vline(xintercept = as.numeric(as.Date("2004-06-01")), size = 1, linetype = 2, color = "black", alpha = 0.5) +
+    ylab(ylabel) + xlab(xlabel) +theme(legend.position = "top", legend.direction = "horizontal") +
+    scale_x_date(minor_breaks = date_breaks("year"))
+}
+
+## select salinity data and plot
+newsubset <- subset(VMdag_tidy, VMdag_tidy$variable %in% c("Saliniteit boven", "Saliniteit beneden"))
+```
+
+De saliniteit in het Veerse Meer varieerde in de periode 2000-2014 tussen `r round(min(newsubset$value, na.rm = T), 1)` en `r round(max(newsubset$value, na.rm = T), 1)` PSU (Figuur 5.1).
+```{r, echo = F, warning = F, fig.height = 3, fig.width = 8}
+plot.meetpaal.data(newsubset, ylabel = "Daggemiddelde saliniteit (PSU)", xlabel = "Datum")
+```
+
+
+##5.3. Temperatuur
+```{r, echo = F, warning = F}
+## select temperature data and plot
+newsubset <- subset(VMdag_tidy, VMdag_tidy$variable %in% c("Temperatuur boven", "Temperatuur beneden"))
+```
+De watertemperatuur in het Veerse Meer varieerde in de periode 2000-2014 tussen `r round(min(newsubset$value, na.rm = T), 1)` en `r round(max(newsubset$value, na.rm = T), 1)` (_original report: 0,5 en 24,0_) graden Celsius (Figuur 5.2). De gemiddelde jaartemperatuur ligt tussen 10,9 en 13,0 graden Celsius en vertoont geen trendmatige verandering (Figuur 5.3).
+
+```{r, echo=FALSE, warning = F, fig.height = 3, fig.width = 8}
+plot.meetpaal.data(newsubset, ylabel = "Daggemiddelde temperatuur (C)", xlabel = "Datum")
+```
+
+```{r, echo = F, warning=F, comment=F}
+## Load data, specify path when needed
+load(file = "../R/DATA/MWTL_Veersemeer_bewerkt.Rdata")
+alllocs <- as.character(unique(rws_dat$locatie))
+## run following code to see the list of measured variables
+ # unique(rws_dat$variable)
+#  [1] "ammonium"                       "chloriniteit"                   "chlorofyl-a"                   
+#  [4] "doorzicht in dm"                "extinctie coefficient"          "kjelldahl stikstof"            
+#  [7] "nitraat"                        "nitriet"                        "opgelost organisch koolstof"   
+# [10] "opgelost fosfaat"               "particulair organisch koolstof" "zuurstofverzadiging"           
+# [13] "saliniteit"                     "silicaat"                       "totaal stikstof"               
+# [16] "totaal opgelost stikstof"       "totaal particulair stikstof"    "temperatuur"                   
+# [19] "totaal fosfaat"                 "totaal opgelost fosfaat"        "totaal particulair fosfaat"    
+# [22] "totaal organisch koolstof"      "zuurgraad"                      "zuurstof"                      
+# [25] "gesuspendeerd materiaal"        "opgelost anorganisch N"        
+
+plotWaterbase <- function (subdf, variable, xx, yy, unit = "eenheid", trendline = F, loessline = F, lspan = 0.3, perc90line = F, pointline = F) {
+  x = as.numeric(subdf[,xx]); y = subdf[,yy]    
+  minscale   <- min(subdf[,xx])
+  maxscale   <- max(subdf[,xx])
+  substance  <- unique(subdf[,variable])
+  unit = unique(subdf[,unit])
+  pl <- ggplot(subdf, aes_string(xx, yy))
+  pl <- pl + geom_point(aes(), size = 3, color = "seagreen4", alpha = 0.5)
+  if(trendline){
+    regression <- summary(glm(y ~ x + I(cos(2 * pi * x / 31556995)) + I(sin(2 * pi * x / 31556995))))
+    slope      <- regression$coefficients[2,1]  #slope of regression including season effect
+    pvalue     <- format(regression$coefficients[2,4], digits = 2)
+    intercept  <- regression$coefficients[[1]]
+    yposition  <- quantile(subdf[,yy], 0.99, na.rm = T)
+    pl <- pl + geom_smooth(aes(), method='lm', formula = y ~ x+I(cos(2*pi*x/31622400))+I(sin(2*pi*x/31622400)), size = 0.7, alpha = 0.3, n = 1000)
+    pl <- pl + geom_abline(intercept = intercept, slope = slope , color = "darkblue", size = 1)
+    pl <- pl + annotate("text", label = paste("slope =", format(slope*31622400, digits = 2), unit, "per year | ", "p=", pvalue), x = maxscale - 0.5 * (maxscale - minscale), y = yposition, size = 4)
+  }
+  if(loessline){
+    pl <- pl + geom_smooth(aes(), method='loess', span = lspan, size = 1, n = 1000)
+  }
+  if(perc90line){
+    subdf_year <- ddply(subdf, ~ year + season, summarize, perc = quantile(waarde, probs = 0.9), na.rm = T)
+    subdf_year$year <- as.POSIXct(paste(as.character(subdf_year$year), "-07-01 00:00:00", sep = ""))
+    pl <- pl + geom_crossbar(data = subdf_year, aes(year, perc, color = season), size = 0.75, ymin =F, ymax = F) +
+      scale_colour_discrete(guide = FALSE)
+  }
+  if(pointline) pl <- pl + geom_line()
+  pl <- pl + geom_vline(xintercept = as.numeric(as.POSIXct("2004-06-01")), size = 1, linetype = 2, color = "black", alpha = 0.5)
+  pl <- pl + theme(text = element_text(size = 10), legend.position = "bottom")
+  pl <- pl + scale_x_datetime(minor_breaks = date_breaks("1 year"))
+  pl <- pl + xlab("year") + ylab(paste(substance, unit))
+  print(pl)
+}
+
+```
+
+##5.4. Zwevende stof en extinctiecoefficient
+
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
+
+subdf = subset(rws_dat, rws_dat$variable == "gesuspendeerd materiaal" &
+                 rws_dat$locatie == "Soelekerkepolder oost" &
+                 rws_dat$year >= beginjaar & rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, loessline = T)
+
+```
+
+Zwevende stof in het Veerse Meer varieerde in de periode `r beginjaar` tot `r eindjaar` tussen `r round(min(subdf$waarde, na.rm = T), 1)` en `r round(max(subdf$waarde, na.rm = T), 1)` mg/l (Figuur 5.1).
+
+
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
+
+subdf = subset(rws_dat, rws_dat$variable == "doorzicht in dm" &
+                 rws_dat$locatie == "Soelekerkepolder oost" &
+                 rws_dat$year >= beginjaar & rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, loessline = T)
+
+```
+
+Doorzicht in dm in het Veerse Meer varieerde in de periode `r beginjaar` tot `r eindjaar` tussen `r round(min(subdf$waarde, na.rm = T), 1)` en `r round(max(subdf$waarde, na.rm = T), 1)` m^-1^ (Figuur 5.1).
+
+
+
+##5.5. Nutrientenconcentraties
+
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
+subdf = subset(rws_dat, rws_dat$variable == "opgelost fosfaat" &
+                 rws_dat$locatie == "Soelekerkepolder oost" &
+                 rws_dat$year >= beginjaar &
+                 rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
+
+```
+
+
+
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
+subdf = subset(rws_dat, rws_dat$variable == "opgelost anorganisch N" &
+                 rws_dat$locatie == "Soelekerkepolder oost" &
+                 rws_dat$year >= beginjaar &
+                 rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
+```
+
+In de periode `r beginjaar` - `r eindjaar` nam de nitraat concentratie af/toe met xxxx mg N/jaar (zie figuur). 
+
+
+
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
+subdf = subset(rws_dat, rws_dat$variable == "silicaat" &
+                 rws_dat$locatie == "Soelekerkepolder oost" &
+                 rws_dat$year >= beginjaar &
+                 rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
+
+```
+
+
+```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
+subdf = subset(rws_dat, rws_dat$variable == "ammonium" &
+                 rws_dat$locatie == "Soelekerkepolder oost" &
+                 rws_dat$year >= beginjaar &
+                 rws_dat$year <= eindjaar)
+plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
+
+```
+
+
+##5.6. Verontreinigende stoffen
+
+
