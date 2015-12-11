@@ -2,7 +2,7 @@
 title: "Waterkwaliteit"
 author: "Sascha van Zijll Langhout"
 date: "December 1, 2015"
-output: pdf_document
+output: html_document
 ---
 
 ```{r load_packages, include=FALSE}
@@ -64,7 +64,7 @@ Figuur 5.1 toont de daggemiddelde saliniteit gemeten op locaties VM4 en VM5. De 
 Tabel 5.1. Overzicht van data voor saliniteit in het Veerse Meer. bron: MWTL via Servicedesk data en meetpalen via [link](http://waterberichtgeving.rws.nl/nl/water-en-weer_dataleveringen_ophalen-opgetreden-data.htm)
 
 Naam                 |	Coördinaten (RD) | Diepte (m NAP)	          | Periode	| Beschikbaarheid 
----------------------|-------------------|--------------------------|---------|----------------
+---------------------|-------------------|--------------------------|---------|------
 VM4 Oranjeplaat	     | (37914, 393297)   |	-0,98 m onder wateropp. |	2000 – mei 2015	| 92%  
 NA                 | NA                |	-2,72 m NAP             | NA      |    91%
 VM5 Schotsman/Ruiterplaat	| (34132, 400630)	| -0,95 m onder wateropp.	| 2005 – mei 2015	|90%
@@ -203,9 +203,8 @@ subdf = subset(rws_dat, rws_dat$variable == "opgelost fosfaat" &
 plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
 
 ```
-In de periode `r beginjaar` - `r eindjaar` nam de nitraat concentratie af/toe met xxx mg N/jaar (zie figuur). 
 
-
+In de periode `r beginjaar` - `r eindjaar` nam de fosfaat concentratie nam toe met ongeveer 0.2 mg P/jaar (zie figuur).
 
 ```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
 subdf = subset(rws_dat, rws_dat$variable == "opgelost anorganisch N" &
@@ -215,8 +214,7 @@ subdf = subset(rws_dat, rws_dat$variable == "opgelost anorganisch N" &
 plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
 ```
 
-In de periode `r beginjaar` - `r eindjaar` nam de nitraat concentratie af/toe met xxxx mg N/jaar (zie figuur). 
-
+In de periode `r beginjaar` - `r eindjaar` nam de nitraat concentratie af met ongeveer 1 mg N/jaar (zie figuur). 
 
 
 ```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
@@ -228,6 +226,7 @@ plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid
 
 ```
 
+In de periode `r beginjaar` - `r eindjaar` nam de silicaat concentratie af met 0.5 mg Si/jaar (zie figuur). 
 
 ```{r, echo = F, warning = F, fig.height = 2, fig.width = 8, eval = F}
 subdf = subset(rws_dat, rws_dat$variable == "ammonium" &
@@ -237,6 +236,8 @@ subdf = subset(rws_dat, rws_dat$variable == "ammonium" &
 plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
 
 ```
+
+In de periode `r beginjaar` - `r eindjaar` nam de ammonium concentratie af met 0.2 mg NH3/jaar (zie figuur). 
 
 
 ##5.6. Verontreinigende stoffen

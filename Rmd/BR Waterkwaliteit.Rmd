@@ -2,7 +2,7 @@
 title: "Waterkwaliteit"
 author: "Sascha van Zijll Langhout"
 date: "December 1, 2015"
-output: pdf_document
+output: html_document
 ---
 
 ```{r load_packages, include=FALSE}
@@ -64,7 +64,7 @@ Figuur 5.1 toont de daggemiddelde saliniteit gemeten op locaties VM4 en VM5. De 
 Tabel 5.1. Overzicht van data voor saliniteit in het Veerse Meer. bron: MWTL via Servicedesk data en meetpalen via [link](http://waterberichtgeving.rws.nl/nl/water-en-weer_dataleveringen_ophalen-opgetreden-data.htm)
 
 Naam                 |	Coördinaten (RD) | Diepte (m NAP)	          | Periode	| Beschikbaarheid 
----------------------|-------------------|--------------------------|---------|----------------
+---------------------|-------------------|--------------------------|---------|------
 VM4 Oranjeplaat	     | (37914, 393297)   |	-0,98 m onder wateropp. |	2000 – mei 2015	| 92%  
 NA                 | NA                |	-2,72 m NAP             | NA      |    91%
 VM5 Schotsman/Ruiterplaat	| (34132, 400630)	| -0,95 m onder wateropp.	| 2005 – mei 2015	|90%
@@ -195,6 +195,8 @@ In de waterlaag bij de bodem bestaat het DIN in de zomer voor nagenoeg 100% uit 
 De seizoensdynamiek in de silicaatconcentraties laat eveneens maximale concentraties in de wintermaanden zien, met een snelle afname in het voorjaar als gevolg van opname door fytoplankton (Fig. 5.8). De laagste concentraties komen voor in de maanden april-juni. De winterconcentraties zijn gedaald van gemiddeld 6,1 mg Si/l in 2000-2004 tot 2,8 mg Si/l in de periode na de ingebruikname van de Katse Heule. De concentraties in de minimum periode in het voorjaar zijn eveneens sterk gedaald, van gemiddeld 3,8 mg/l naar 0,5 mg Si/l, wat nog steeds ruim boven de limiterende concentratie van 0,06 mg Si/l is.
 Wat opvalt bij de silicaatconcentraties is dat de voorjaarsminima in de laatste jaren voor de opening van de Katse Heule stegen van 3,6 naar 5.9 mg Si/l wat duidt op een verminderde groei van kiezelwieren tijdens de voorjaarsbloei.
 
+In deze grafieken worden de wintermetingen weergeven door de horizontale blauwe lijn, de rode horizontale lijnen geven de zomermeting weer.
+
 ```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
 subdf = subset(rws_dat, rws_dat$variable == "opgelost fosfaat" &
                  rws_dat$locatie == "Soelekerkepolder oost" &
@@ -203,9 +205,8 @@ subdf = subset(rws_dat, rws_dat$variable == "opgelost fosfaat" &
 plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
 
 ```
-In de periode `r beginjaar` - `r eindjaar` nam de nitraat concentratie af/toe met xxx mg N/jaar (zie figuur). 
 
-
+In de periode `r beginjaar` - `r eindjaar` nam de fosfaat concentratie nam af met ongeveer 0.25 mg P/jaar (zie figuur).
 
 ```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
 subdf = subset(rws_dat, rws_dat$variable == "opgelost anorganisch N" &
@@ -215,8 +216,7 @@ subdf = subset(rws_dat, rws_dat$variable == "opgelost anorganisch N" &
 plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
 ```
 
-In de periode `r beginjaar` - `r eindjaar` nam de nitraat concentratie af/toe met xxxx mg N/jaar (zie figuur). 
-
+In de periode `r beginjaar` - `r eindjaar` nam de nitraat concentratie af met ongeveer 0.8 mg N/jaar (zie figuur). 
 
 
 ```{r, echo = F, warning = F, fig.height = 2, fig.width = 8}
@@ -228,6 +228,7 @@ plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid
 
 ```
 
+In de periode `r beginjaar` - `r eindjaar` nam de silicaat concentratie af met 2.5 mg Si/jaar (zie figuur). 
 
 ```{r, echo = F, warning = F, fig.height = 2, fig.width = 8, eval = F}
 subdf = subset(rws_dat, rws_dat$variable == "ammonium" &
@@ -237,6 +238,8 @@ subdf = subset(rws_dat, rws_dat$variable == "ammonium" &
 plotWaterbase(subdf, "variable", xx = "datetime", yy = "waarde", unit = "eenheid", pointline = T, perc90line = T)
 
 ```
+
+In de periode `r beginjaar` - `r eindjaar` nam de ammonium concentratie af met 0.2 mg NH3/jaar (zie figuur). 
 
 
 ##5.6. Verontreinigende stoffen
